@@ -7,18 +7,11 @@
  */
 package com.tomseysdavies.responder {
 import de.betriebsraum.utils.tests.AsyncUtil;
-
-import flash.net.Responder;
-
-import flashx.textLayout.debug.assert;
-
 import org.flexunit.asserts.assertFalse;
-import org.flexunit.asserts.assertTrue;
-import org.flexunit.async.Async;
 
 public class FluentResponderTest {
 
-    private var _call:MockCall
+    private var _call:MockCall;
 
 
     [Before]
@@ -34,7 +27,7 @@ public class FluentResponderTest {
 
     }
 
-    protected function verifySuccess(value:int){
+    protected function verifySuccess(value:int):void{
 
     }
 
@@ -44,7 +37,7 @@ public class FluentResponderTest {
         _call.executeFail().addErrorHandler(asyncHandler);
     }
 
-    private function verifyFail(value:Boolean){
+    private function verifyFail(value:Boolean):void{
 
     }
 
