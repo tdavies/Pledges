@@ -58,6 +58,32 @@ public class PledgeTest {
     }
 
     [Test]
+    public function canNotSucceedAfterFailed():void {
+        var responder:Pledge = new Pledge();
+        var success:Boolean;
+        responder.success(function (val:int):void{
+            success = true;
+        });
+        responder.triggerFailure();
+        success = false;
+        responder.triggerSuccess();
+        assertFalse(success);
+    }
+
+    [Test]
+    public function canNotFailAfterSucceed():void {
+        var responder:Pledge = new Pledge();
+        var failed:Boolean;
+        responder.fail(function (val:int):void{
+            failed = true;
+        });
+        responder.triggerSuccess()
+        failed = false;
+        responder.triggerFailure()
+        assertFalse(failed);
+    }
+
+    [Test]
     public function testCallsSuccessHandlerAfterFulfilled():void {
         var responder:Pledge = new Pledge();
         var success:Boolean;
