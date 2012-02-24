@@ -20,7 +20,7 @@ public class MockCall {
     public function executeSuccess():IPledge {
         var responder:Pledge = new Pledge();
         var timer:Timer = new Timer(50, 1);
-        responder.mapResolveEvent(timer,TimerEvent.TIMER_COMPLETE);
+        responder.mapSuccessEvent(timer,TimerEvent.TIMER_COMPLETE);
         timer.start();
         return responder;
     }
@@ -28,7 +28,7 @@ public class MockCall {
     public function executeFail():IPledge {
         var responder:Pledge = new Pledge();
         var timer:Timer = new Timer(50, 1);
-        responder.mapRejectEvent(timer,TimerEvent.TIMER_COMPLETE);
+        responder.mapFailureEvent(timer,TimerEvent.TIMER_COMPLETE);
         timer.start();
         return responder;
     }

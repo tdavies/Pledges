@@ -9,7 +9,7 @@ package com.tomseysdavies.pledge {
 public interface IPledge {
 
     function then(successHandler:Function = null,failureHandler:Function= null,progressHandler:Function=null):IPledge;
-    function done(successHandler:Function):IPledge;
+    function success(successHandler:Function):IPledge;
     function fail(failureHandler:Function):IPledge;
     function progress(progressHandler:Function):IPledge;
 

@@ -10,6 +10,7 @@ import com.tomseysdavies.pledge.Pledge;
 
 import de.betriebsraum.utils.tests.AsyncUtil;
 import org.flexunit.asserts.assertFalse;
+import org.flexunit.asserts.assertTrue;
 
 public class PledgeTest {
 
@@ -25,7 +26,7 @@ public class PledgeTest {
     [Test(async)]
     public function testTriggerSuccess():void {
         var asyncHandler:Function = AsyncUtil.asyncHandler(this,verifySuccess,null,250);
-        _call.executeSuccess().done(asyncHandler);
+        _call.executeSuccess().success(asyncHandler);
 
     }
 
@@ -47,23 +48,45 @@ public class PledgeTest {
     public function testAutoDispose():void {
         var responder:Pledge = new Pledge();
         var success:Boolean;
-        responder.done(function (val:int):void{
+        responder.success(function (val:int):void{
             success = true;
         });
-        responder.resolve(2);
+        responder.triggerSuccess(2);
         success = false;
-        responder.resolve(2);
+        responder.triggerSuccess(2);
         assertFalse(success);
+    }
+
+    [Test]
+    public function testCallsSuccessHandlerAfterFulfilled():void {
+        var responder:Pledge = new Pledge();
+        var success:Boolean;
+        responder.triggerSuccess(2);
+        responder.success(function (val:int):void{
+            success = (val == 2);
+        });
+        assertTrue(success);
+    }
+
+    [Test]
+    public function testCallsErrorsHandlerAfterFailed():void {
+        var responder:Pledge = new Pledge();
+        var result:Boolean;
+        responder.triggerFailure(2);
+        responder.fail(function (val:int):void{
+            result = (val == 2);
+        });
+        assertTrue(result);
     }
 
     [Test(expects="Error")]
     public function testWrongType():void {
         var responder:Pledge = new Pledge();
         var success:Boolean;
-        responder.done(function (val:Object):void{
+        responder.success(function (val:Object):void{
             success = true;
         });
-        responder.resolve(2);
+        responder.triggerSuccess(2);
         assertFalse(success);
     }
 
@@ -71,11 +94,11 @@ public class PledgeTest {
     public function testDispose():void {
         var responder:Pledge = new Pledge();
         var success:Boolean;
-        responder.done(function (val:int):void{
+        responder.success(function (val:int):void{
             success = true;
         });
         responder.dispose();
-        responder.resolve();
+        responder.triggerSuccess();
         assertFalse(success);
     }
 

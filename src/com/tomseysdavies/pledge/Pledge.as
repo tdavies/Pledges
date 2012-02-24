@@ -12,13 +12,16 @@ import flash.events.IEventDispatcher;
 public class Pledge implements IPledge {
 
     /**
-     * Fluent pledge class for async service calls
+     * Pledge class for async calls.
      * @author Tom Davies
      */
-    private const _successHandlers:Vector.<Function> = new Vector.<Function>();
-    private const _errorHandlers:Vector.<Function> = new Vector.<Function>();
-    private const _progressHandlers:Vector.<Function> = new Vector.<Function>();
-    private const _eventListeners:Vector.<CacheEvent> = new Vector.<CacheEvent>();
+    private var _resultData:Array;
+    private var _errorData:Array;
+    private var _progressData:Array;
+    private var _successHandlers:Vector.<Function> = new Vector.<Function>();
+    private var _errorHandlers:Vector.<Function> = new Vector.<Function>();
+    private var _progressHandlers:Vector.<Function> = new Vector.<Function>();
+    private var _eventListeners:Vector.<CacheEvent> = new Vector.<CacheEvent>();
 
     public function Pledge() {
 
@@ -26,7 +29,7 @@ public class Pledge implements IPledge {
 
     public function then(successHandler:Function = null,failureHandler:Function= null,progressHandler:Function=null):IPledge {
         if(successHandler){
-            done(successHandler);
+            success(successHandler);
         }
         if(failureHandler){
             fail(failureHandler);
@@ -37,74 +40,98 @@ public class Pledge implements IPledge {
         return this;
     }
 
-    public function done(successHandler:Function):IPledge {
-        _successHandlers.push(successHandler);
+    public function success(successHandler:Function):IPledge {
+        if(_resultData){
+            successHandler.apply(this,_resultData);
+        }
+        if(_successHandlers){
+            _successHandlers.push(successHandler);  
+        }
         return this;
     }
 
     public function fail(failureHandler:Function):IPledge {
-        _errorHandlers.push(failureHandler);
+        if(_errorData){
+            failureHandler.apply(this,_errorData);
+        }
+        if(_errorHandlers){
+            _errorHandlers.push(failureHandler);
+        }
         return this;
     }
 
     public function progress(progressHandler:Function):IPledge {
-        _progressHandlers.push(progressHandler);
+        if(_progressData){
+            progressHandler.apply(this,_progressData);
+        }
+        if(_progressHandlers){
+            _progressHandlers.push(progressHandler);
+        }
         return this;
     }
 
-    public function resolve(...payload):void {
+    public function triggerSuccess(...payload):void {
+        _resultData = payload;
         for each(var handler:Function in  _successHandlers){
             handler.apply(this,payload)
         }
         dispose();
     }
 
-    public function reject(...payload):void {
+
+    public function triggerFailure(...payload):void {
+        _errorData = payload;
         for each(var handler:Function in  _errorHandlers){
             handler.apply(this,payload)
         }
         dispose();
     }
 
-    public function notify(...payload):void {
+    public function triggerProgress(...payload):void {
+        _progressData = payload;
         for each(var handler:Function in  _progressHandlers){
             handler.apply(this,payload)
         }
     }
 
-    public function mapResolveEvent(target:IEventDispatcher, eventType:String):void {
+
+    public function mapSuccessEvent(target:IEventDispatcher, eventType:String):Pledge {
         _eventListeners.push(new CacheEvent(target,eventType,successEventHandler));
+        return this;
     }
 
-    public function mapRejectEvent(target:IEventDispatcher, eventType:String):void {
+    public function mapFailureEvent(target:IEventDispatcher, eventType:String):Pledge {
         _eventListeners.push(new CacheEvent(target,eventType,errorEventHandler));
+        return this;
     }
 
-    public function mapNotifyEvent(target:IEventDispatcher, eventType:String):void {
+    public function mapProgressEvent(target:IEventDispatcher, eventType:String):Pledge {
         _eventListeners.push(new CacheEvent(target,eventType,notifyEventHandler));
+        return this;
     }
 
     private function successEventHandler(e:Event):void{
-        resolve(e);
+        triggerSuccess(e);
         dispose();
     }
 
     private function errorEventHandler(e:Event):void{
-        reject(e);
+        triggerFailure(e);
         dispose();
     }
 
     private function notifyEventHandler(e:Event):void{
-        notify(e);
+        triggerProgress(e);
     }
 
     public function dispose():void {
-        _errorHandlers.length = 0;
-        _successHandlers.length = 0;
-        _progressHandlers.length = 0;
+        _errorHandlers = null;
+        _successHandlers = null;
+        _progressHandlers = null;
         for each(var cachedEvent:CacheEvent in _eventListeners){
             cachedEvent.dispose();
         }
+        _eventListeners = null;
     }
 
 }

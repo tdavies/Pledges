@@ -22,7 +22,7 @@ public class Example extends Sprite{
 
         // loader.load("http://www.w3schools.com/xml/note.xml").then(successHandler,errorHandler,progressHandler);
         var pledge:IPledge =  loader.load("http://www.w3schools.com/xml/note.xml");
-        pledge.done(successHandler);
+        pledge.success(successHandler);
         pledge.fail(errorHandler);
         pledge.progress(progressHandler);
     }
