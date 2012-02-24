@@ -5,11 +5,13 @@
  * Time: 20:03
  * To change this template use File | Settings | File Templates.
  */
-package com.tomseysdavies.responder {
+package com.tomseysdavies.pledge {
+import com.tomseysdavies.pledge.Pledge;
+
 import de.betriebsraum.utils.tests.AsyncUtil;
 import org.flexunit.asserts.assertFalse;
 
-public class FluentResponderTest {
+public class PledgeTest {
 
     private var _call:MockCall;
 
@@ -23,7 +25,7 @@ public class FluentResponderTest {
     [Test(async)]
     public function testTriggerSuccess():void {
         var asyncHandler:Function = AsyncUtil.asyncHandler(this,verifySuccess,null,250);
-        _call.executeSuccess().addSuccessHandler(asyncHandler);
+        _call.executeSuccess().done(asyncHandler);
 
     }
 
@@ -34,47 +36,46 @@ public class FluentResponderTest {
     [Test(async)]
     public function testTriggerError():void {
         var asyncHandler:Function = AsyncUtil.asyncHandler(this,verifyFail,null,250);
-        _call.executeFail().addErrorHandler(asyncHandler);
+        _call.executeFail().fail(asyncHandler);
     }
 
     private function verifyFail(value:Boolean):void{
 
     }
 
-
     [Test]
     public function testAutoDispose():void {
-        var responder:FluentResponder = new  FluentResponder(int,int);
+        var responder:Pledge = new Pledge();
         var success:Boolean;
-        responder.addSuccessHandler(function (val:int):void{
+        responder.done(function (val:int):void{
             success = true;
         });
-        responder.triggerSuccess(2);
+        responder.resolve(2);
         success = false;
-        responder.triggerSuccess(2);
+        responder.resolve(2);
         assertFalse(success);
     }
 
     [Test(expects="Error")]
     public function testWrongType():void {
-        var responder:FluentResponder = new  FluentResponder(int,int);
+        var responder:Pledge = new Pledge();
         var success:Boolean;
-        responder.addSuccessHandler(function (val:Boolean):void{
+        responder.done(function (val:Object):void{
             success = true;
         });
-        responder.triggerSuccess(Boolean);
+        responder.resolve(2);
         assertFalse(success);
     }
 
     [Test]
     public function testDispose():void {
-        var responder:FluentResponder = new  FluentResponder();
+        var responder:Pledge = new Pledge();
         var success:Boolean;
-        responder.addSuccessHandler(function (val:int):void{
+        responder.done(function (val:int):void{
             success = true;
         });
         responder.dispose();
-        responder.triggerSuccess();
+        responder.resolve();
         assertFalse(success);
     }
 
