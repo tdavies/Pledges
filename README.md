@@ -2,10 +2,10 @@
 
 a simple as3 implementation of JS Promises. A universal way of dealing with asynchronous calls.
 
->"var pledge:IPledge =  loader.load("http://www.w3schools.com/xml/note.xml");
-pledge.done(successHandler);
-pledge.fail(errorHandler);
-pledge.progress(progressHandler);"
+>var pledge:IPledge =  loader.load("http://www.w3schools.com/xml/note.xml");
+>pledge.done(successHandler);
+>pledge.fail(errorHandler);
+>pledge.progress(progressHandler);
 
 or
 
