@@ -20,7 +20,6 @@ public class Example extends Sprite{
     public function Example() {
         var loader:FileLoader = new FileLoader();
 
-        // loader.load("http://www.w3schools.com/xml/note.xml").then(successHandler,errorHandler,progressHandler);
         var pledge:IPledge =  loader.load("http://www.w3schools.com/xml/note.xml");
         pledge.success(successHandler);
         pledge.fail(errorHandler);
