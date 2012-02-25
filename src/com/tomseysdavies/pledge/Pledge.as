@@ -22,9 +22,10 @@ public class Pledge implements IPledge {
     private var _errorHandlers:Vector.<Function> = new Vector.<Function>();
     private var _progressHandlers:Vector.<Function> = new Vector.<Function>();
     private var _eventListeners:Vector.<CacheEvent> = new Vector.<CacheEvent>();
+    private var _state:PledgeState;
 
     public function Pledge() {
-
+        _state =  PledgeState.PENDING;
     }
 
     public function then(successHandler:Function = null,failureHandler:Function= null,progressHandler:Function=null):IPledge {
@@ -71,6 +72,7 @@ public class Pledge implements IPledge {
     }
 
     public function triggerSuccess(...payload):void {
+        _state =  PledgeState.FULFILLED;
         _resultData = payload;
         for each(var handler:Function in  _successHandlers){
             handler.apply(this,payload)
@@ -80,6 +82,7 @@ public class Pledge implements IPledge {
 
 
     public function triggerFailure(...payload):void {
+        _state =  PledgeState.FAILED;
         _errorData = payload;
         for each(var handler:Function in  _errorHandlers){
             handler.apply(this,payload)
@@ -110,6 +113,20 @@ public class Pledge implements IPledge {
         return this;
     }
 
+    public function get state():PledgeState{
+         return _state;
+    }
+
+    public function dispose():void {
+        _errorHandlers = null;
+        _successHandlers = null;
+        _progressHandlers = null;
+        for each(var cachedEvent:CacheEvent in _eventListeners){
+            cachedEvent.dispose();
+        }
+        _eventListeners = null;
+    }
+
     private function successEventHandler(e:Event):void{
         triggerSuccess(e);
         dispose();
@@ -124,15 +141,7 @@ public class Pledge implements IPledge {
         triggerProgress(e);
     }
 
-    public function dispose():void {
-        _errorHandlers = null;
-        _successHandlers = null;
-        _progressHandlers = null;
-        for each(var cachedEvent:CacheEvent in _eventListeners){
-            cachedEvent.dispose();
-        }
-        _eventListeners = null;
-    }
+
 
 }
 }

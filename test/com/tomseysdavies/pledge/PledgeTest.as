@@ -58,7 +58,7 @@ public class PledgeTest {
     }
 
     [Test]
-    public function canNotSucceedAfterFailed():void {
+    public function testCanNotSucceedAfterFailed():void {
         var responder:Pledge = new Pledge();
         var success:Boolean;
         responder.success(function (val:int):void{
@@ -71,7 +71,7 @@ public class PledgeTest {
     }
 
     [Test]
-    public function canNotFailAfterSucceed():void {
+    public function testCanNotFailAfterSucceed():void {
         var responder:Pledge = new Pledge();
         var failed:Boolean;
         responder.fail(function (val:int):void{
@@ -126,6 +126,26 @@ public class PledgeTest {
         responder.dispose();
         responder.triggerSuccess();
         assertFalse(success);
+    }
+
+    [Test]
+    public function testIsInPendingStateBeforeTriggered():void {
+        var responder:Pledge = new Pledge();
+        assertTrue(responder.state == PledgeState.PENDING);
+    }
+
+    [Test]
+    public function testIsInFulfilledStateAfterSuccessTriggered():void {
+        var responder:Pledge = new Pledge();
+        responder.triggerSuccess();
+        assertTrue(responder.state == PledgeState.FULFILLED);
+    }
+
+    [Test]
+    public function testIsInFailedStateAfterFailureTriggered():void {
+        var responder:Pledge = new Pledge();
+        responder.triggerFailure()
+        assertTrue(responder.state == PledgeState.FAILED);
     }
 
 }
