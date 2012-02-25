@@ -28,6 +28,27 @@ public class Pledge implements IPledge {
         _state =  PledgeState.PENDING;
     }
 
+    public static function when(...pledges):IPledge{
+         var pledge:Pledge = new Pledge();
+         var successCount:int = 0;
+         for(var i:int=0;i<pledges.length;i++){
+             var subPledge:IPledge = pledges[i] as IPledge;
+             subPledge.success(function():void {
+                successCount ++;
+                checkSuccess();
+             });
+             subPledge.fail(function():void {
+                pledge.triggerFailure();
+             });
+         }
+         function checkSuccess():void{
+            if(successCount == pledges.length){
+                pledge.triggerSuccess();
+            }
+         }
+        return pledge;
+    }
+
     public function then(successHandler:Function = null,failureHandler:Function= null,progressHandler:Function=null):IPledge {
         if(successHandler){
             success(successHandler);

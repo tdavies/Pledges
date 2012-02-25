@@ -148,5 +148,44 @@ public class PledgeTest {
         assertTrue(responder.state == PledgeState.FAILED);
     }
 
+    [Test]
+    public function testHandlesAreCalledInOrder():void {
+        var responder:Pledge = new Pledge();
+        var res:Boolean;
+        responder.success(function ():void{
+            res = true;
+        });
+        responder.success(function ():void{
+            assertTrue(res);
+        });
+        responder.triggerSuccess();
+    }
+
+    [Test]
+    public function testWhenFiredAfterBothSucceed():void {
+        var pledge1:Pledge = new Pledge();
+        var pledge2:Pledge = new Pledge();
+        var res:Boolean;
+        Pledge.when(pledge1,pledge2).success(function ():void{
+            res = true;
+        })
+        pledge1.triggerSuccess();
+        pledge2.triggerSuccess();
+        assertTrue(res);
+    }
+
+    [Test]
+    public function testWhenNotFiredAfterOneFails():void {
+        var pledge1:Pledge = new Pledge();
+        var pledge2:Pledge = new Pledge();
+        var res:Boolean;
+        Pledge.when(pledge1,pledge2).success(function ():void{
+            res = true;
+        })
+        pledge1.triggerSuccess();
+        pledge2.triggerFailure();
+        assertFalse(res);
+    }
+
 }
 }
